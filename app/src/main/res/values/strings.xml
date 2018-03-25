@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="create_some_notes">Create some notes</string>
+    <string name="hint_note_title">Title</string>
+    <string name="hint_note_body">Add your note here...</string>
+    <string name="add_note">Add note</string>
+    <string name="error_title_empty">Title can\'t be empty</string>
+    <string name="error_body_empty">Body can\'t be empty</string>
+    <string name="note_save_success">Note successfully saved</string>
+    <string name="error">Some error occurred</string>
+</resources>
