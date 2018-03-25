@@ -14,6 +14,8 @@ import com.example.vishalarora.notes.di.scope.ActivityScope;
 import com.example.vishalarora.notes.interactor.NotesInteractor;
 import com.example.vishalarora.notes.interactor.NotesInteractorImpl;
 import com.example.vishalarora.notes.presenter.HomePresenterImpl;
+import com.example.vishalarora.notes.rx.RxSchedulerAbs;
+import com.example.vishalarora.notes.rx.RxSchedulers;
 
 import dagger.Module;
 import dagger.Provides;
@@ -37,8 +39,8 @@ public class HomeModule {
 
     @Provides
     @ActivityScope
-    HomePresenter getPresenter(NotesInteractor notesInteractor, CompositeDisposable compositeDisposable) {
-        return new HomePresenterImpl(notesInteractor, compositeDisposable);
+    HomePresenter getPresenter(NotesInteractor notesInteractor, CompositeDisposable compositeDisposable, RxSchedulerAbs rxSchedulerAbs) {
+        return new HomePresenterImpl(notesInteractor, compositeDisposable, rxSchedulerAbs);
     }
 
     @Provides
@@ -75,5 +77,11 @@ public class HomeModule {
     @ActivityScope
     GridLayoutManager gridLayoutManager() {
         return new GridLayoutManager(homeActivity, SPAN_SIZE);
+    }
+
+    @Provides
+    @ActivityScope
+    RxSchedulerAbs rxSchedulerAbs(){
+        return new RxSchedulers();
     }
 }

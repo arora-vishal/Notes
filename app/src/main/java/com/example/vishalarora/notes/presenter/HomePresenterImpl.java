@@ -6,6 +6,7 @@ import com.example.vishalarora.notes.contracts.HomeView;
 import com.example.vishalarora.notes.data.Note;
 import com.example.vishalarora.notes.db.contracts.Tables;
 import com.example.vishalarora.notes.interactor.NotesInteractor;
+import com.example.vishalarora.notes.rx.RxSchedulerAbs;
 import com.example.vishalarora.notes.util.Logger;
 import com.example.vishalarora.notes.util.RxUtil;
 
@@ -24,10 +25,12 @@ public class HomePresenterImpl implements HomePresenter {
     private WeakReference<HomeView> homeViewWeakReference;
     private NotesInteractor notesInteractor;
     private CompositeDisposable compositeDisposable;
+    private RxSchedulerAbs rxSchedulerAbs;
 
-    public HomePresenterImpl(NotesInteractor notesInteractor, CompositeDisposable compositeDisposable) {
+    public HomePresenterImpl(NotesInteractor notesInteractor, CompositeDisposable compositeDisposable, RxSchedulerAbs rxSchedulerAbs) {
         this.notesInteractor = notesInteractor;
         this.compositeDisposable = compositeDisposable;
+        this.rxSchedulerAbs = rxSchedulerAbs;
     }
 
     @Override
@@ -47,8 +50,8 @@ public class HomePresenterImpl implements HomePresenter {
     @Override
     public void loadData() {
         compositeDisposable.add(notesInteractor.fetchNotesOrderBy(Tables.Notes.MODIFIED_TIMESTAMP, true)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(rxSchedulerAbs.getIOScheduler())
+                .observeOn(rxSchedulerAbs.getMainThreadScheduler())
                 .doOnNext(notes -> getView().setProgressView(false))
                 .doOnError(notes -> getView().setProgressView(false))
                 .subscribe(notes -> {
@@ -75,8 +78,8 @@ public class HomePresenterImpl implements HomePresenter {
         if (action == NotesListAdapter.Action.DELETE) {
             getView().setProgressView(true);
             compositeDisposable.add(notesInteractor.removeNote(note.getId())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(rxSchedulerAbs.getIOScheduler())
+                    .observeOn(rxSchedulerAbs.getMainThreadScheduler())
                     .doOnNext(aBoolean -> getView().setProgressView(false))
                     .doOnError(aBoolean -> getView().setProgressView(false))
                     .subscribe(aBoolean -> {

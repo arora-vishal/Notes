@@ -8,6 +8,8 @@ import com.example.vishalarora.notes.di.scope.ActivityScope;
 import com.example.vishalarora.notes.interactor.CreateNoteInteractor;
 import com.example.vishalarora.notes.interactor.CreateNoteInteractorImpl;
 import com.example.vishalarora.notes.presenter.CreateNotePresenterImpl;
+import com.example.vishalarora.notes.rx.RxSchedulerAbs;
+import com.example.vishalarora.notes.rx.RxSchedulers;
 
 import dagger.Module;
 import dagger.Provides;
@@ -22,8 +24,8 @@ public class CreateNoteModule {
 
     @Provides
     @ActivityScope
-    public CreateNotePresenter createNotePresenter(CreateNoteInteractor createNoteInteractor, CompositeDisposable compositeDisposable) {
-        return new CreateNotePresenterImpl(createNoteInteractor, compositeDisposable);
+    public CreateNotePresenter createNotePresenter(CreateNoteInteractor createNoteInteractor, CompositeDisposable compositeDisposable, RxSchedulerAbs schedulerAbs) {
+        return new CreateNotePresenterImpl(createNoteInteractor, compositeDisposable, schedulerAbs);
     }
 
     @Provides
@@ -42,6 +44,12 @@ public class CreateNoteModule {
     @ActivityScope
     CompositeDisposable compositeDisposable() {
         return new CompositeDisposable();
+    }
+
+    @Provides
+    @ActivityScope
+    RxSchedulerAbs rxSchedulerAbs() {
+        return new RxSchedulers();
     }
 
 }

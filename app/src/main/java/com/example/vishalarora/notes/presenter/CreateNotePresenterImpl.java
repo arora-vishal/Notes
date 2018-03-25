@@ -5,6 +5,7 @@ import com.example.vishalarora.notes.contracts.CreateNotePresenter;
 import com.example.vishalarora.notes.contracts.CreateNoteView;
 import com.example.vishalarora.notes.data.Note;
 import com.example.vishalarora.notes.interactor.CreateNoteInteractor;
+import com.example.vishalarora.notes.rx.RxSchedulerAbs;
 import com.example.vishalarora.notes.util.AppUtil;
 import com.example.vishalarora.notes.util.Logger;
 
@@ -23,10 +24,12 @@ public class CreateNotePresenterImpl implements CreateNotePresenter {
     private CreateNoteInteractor createNoteInteractor;
     private WeakReference<CreateNoteView> createNoteViewWeakReference;
     private CompositeDisposable compositeDisposable;
+    private RxSchedulerAbs rxSchedulerAbs;
 
-    public CreateNotePresenterImpl(CreateNoteInteractor createNoteInteractor, CompositeDisposable compositeDisposable) {
+    public CreateNotePresenterImpl(CreateNoteInteractor createNoteInteractor, CompositeDisposable compositeDisposable, RxSchedulerAbs rxSchedulerAbs) {
         this.createNoteInteractor = createNoteInteractor;
         this.compositeDisposable = compositeDisposable;
+        this.rxSchedulerAbs = rxSchedulerAbs;
     }
 
     @Override
@@ -50,8 +53,9 @@ public class CreateNotePresenterImpl implements CreateNotePresenter {
                 .withCreatedTimeStamp(System.currentTimeMillis())
                 .build();
 
-        compositeDisposable.add(createNoteInteractor.createNote(note).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        compositeDisposable.add(createNoteInteractor.createNote(note)
+                .subscribeOn(rxSchedulerAbs.getIOScheduler())
+                .observeOn(rxSchedulerAbs.getMainThreadScheduler())
                 .doOnNext(aBoolean -> getView().setProgressView(false))
                 .doOnError(aBoolean -> getView().setProgressView(false))
                 .subscribe(aBoolean -> {
